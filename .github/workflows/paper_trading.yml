@@ -2,7 +2,7 @@ name: Paper Trading Daily Runner
 
 on:
   schedule:
-    - cron: '0 13 * * 1-5'
+    - cron: '0 13 * * 1-5'  # 美股盤後自動執行 (UTC 13:00)
   workflow_dispatch:
 
 permissions:
@@ -29,36 +29,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 運行紙上交易
+      - name: 運行量化模擬交易 (TSLL / SOXL / TQQQ)
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python paper_trader.py \
-            --symbols SOXX QQQ SPY \
-            --donchian-strategy \
+            --symbols TSLL SOXL TQQQ \
             --entry-period 20 \
             --exit-period 10 \
+            --trailing-stop-pct 0.15 \
             --initial-cash 10000 \
-            --fee-bps 5 \
+            --fee-bps 10 \
             --slippage-bps 5
 
-      - name: 提交和推送日誌
+      - name: 提交和推送對帳單 Log
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add paper_trading/logs/paper_trading/equity_*.csv 2>/dev/null || true
           if ! git diff --cached --quiet; then
-            git commit -m "📊 模擬交易更新 $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git commit -m "📊 模擬交易淨值更新 $(date -u +'%Y-%m-%d %H:%M') UTC"
             git push
           else
-            echo "無需提交任何更改"
-          fi
-
-      - name: Telegram 通知
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          if [ -n "$TELEGRAM_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-            python -c "import os, requests, datetime; t=os.environ['TELEGRAM_TOKEN']; c=os.environ['TELEGRAM_CHAT_ID']; requests.post(f'https://api.telegram.org/bot{t}/sendMessage', json={'chat_id': c, 'text': f'📊 模擬交易完成 — {datetime.date.today()}\n詳情請查看 GitHub Actions。'})"
-          else
-            echo "未偵測到 TELEGRAM_TOKEN 或 TELEGRAM_CHAT_ID，跳過 Telegram 發送。"
+            echo "無淨值變更，跳過 Commit"
           fi
