@@ -1,0 +1,27 @@
+name: Donchian Telegram Bot
+
+on:
+  schedule:
+    - cron: '0 22 * * 1-5'  # 台灣時間週二到週六早上 6 點執行 (對應美股週一至週五盤後)
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install Dependencies
+        run: pip install yfinance pandas requests
+        
+      - name: Run TG Bot
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python donchian_tg_bot.py
