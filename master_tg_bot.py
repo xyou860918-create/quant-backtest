@@ -10,13 +10,17 @@ warnings.filterwarnings('ignore')
 # ==========================================
 # 參數與金鑰設定
 # ==========================================
-# 1. 唐奇安策略參數 (加入 BTC-USD)
 SYMBOLS = ["USD", "QLD", "TSLL", "BTC-USD"]
 ENTRY_WINDOW = 20
 EXIT_WINDOW = 10
 TRAILING_STOP_PCT = 0.15
 
-# 2. 金鑰 (純讀取雲端環境變數)
+# 防禦模式參數
+ATR_SPIKE_RATIO = 1.5      # 波動率飆升倍數閾值
+DEFENSIVE_TRAILING = 0.08  # 防禦模式下的移動停利 (8%)
+DEFENSIVE_EXIT = 5         # 防禦模式下的破底停損 (5日)
+
+# 金鑰讀取
 EIA_API_KEY = os.getenv("EIA_API_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -30,11 +34,11 @@ def send_telegram_message(text):
         print(f"❌ Telegram 發送失敗: {e}")
 
 # ==========================================
-# 模組一：唐奇安 2x 槓桿策略
+# 模組一：唐奇安 + ATR 動態避險策略
 # ==========================================
 def calculate_strategy_state(symbol):
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=180)
+    start_date = end_date - timedelta(days=200) # 拉長天數以計算 60 日 ATR
     df = yf.download(symbol, start=start_date.strftime("%Y-%m-%d"), end=end_date.strftime("%Y-%m-%d"), progress=False)
     if df.empty: return f"❌ {symbol}: 無法抓取資料\n"
 
@@ -43,35 +47,63 @@ def calculate_strategy_state(symbol):
     low_col = df['Low'][symbol] if isinstance(df.columns, pd.MultiIndex) else df['Low']
     data = pd.DataFrame({'price': close_col, 'high': high_col, 'low': low_col}).dropna()
 
+    # 1. 唐奇安通道
     data['upper'] = data['high'].shift(1).rolling(ENTRY_WINDOW).max()
-    data['lower'] = data['low'].shift(1).rolling(EXIT_WINDOW).min()
+    data['lower_normal'] = data['low'].shift(1).rolling(EXIT_WINDOW).min()
+    data['lower_defensive'] = data['low'].shift(1).rolling(DEFENSIVE_EXIT).min()
+
+    # 2. ATR 波動率計算
+    data['H-L'] = data['high'] - data['low']
+    data['H-PC'] = abs(data['high'] - data['price'].shift(1))
+    data['L-PC'] = abs(data['low'] - data['price'].shift(1))
+    data['TR'] = data[['H-L', 'H-PC', 'L-PC']].max(axis=1)
+    data['ATR_14'] = data['TR'].rolling(14).mean()
+    data['ATR_60'] = data['TR'].rolling(60).mean()
+    
     data = data.dropna().copy()
 
     position, peak_price, signal = 0, 0.0, "HOLD"
+    is_defensive_now = False
+
     for i in range(len(data)):
-        p, u, l = data['price'].iloc[i], data['upper'].iloc[i], data['lower'].iloc[i]
+        p = data['price'].iloc[i]
+        u = data['upper'].iloc[i]
+        
+        # 判斷當天是否觸發防禦模式
+        atr_14 = data['ATR_14'].iloc[i]
+        atr_60 = data['ATR_60'].iloc[i]
+        is_defensive = (atr_60 > 0) and (atr_14 > atr_60 * ATR_SPIKE_RATIO)
+        if i == len(data) - 1: is_defensive_now = is_defensive
+
+        current_trailing = DEFENSIVE_TRAILING if is_defensive else TRAILING_STOP_PCT
+        current_lower = data['lower_defensive'].iloc[i] if is_defensive else data['lower_normal'].iloc[i]
+
         signal = "HOLD"
         if position == 0:
             if p > u: position, peak_price, signal = 1, p, "BUY"
         elif position == 1:
             peak_price = max(peak_price, p)
-            if p < peak_price * (1 - TRAILING_STOP_PCT): position, signal = 0, "SELL_TRAILING"
-            elif p < l: position, signal = 0, "SELL_DONCHIAN"
+            if p < peak_price * (1 - current_trailing): position, signal = 0, "SELL_TRAILING"
+            elif p < current_lower: position, signal = 0, "SELL_DONCHIAN"
 
     last_price = float(data['price'].iloc[-1])
-    last_upper, last_lower = float(data['upper'].iloc[-1]), float(data['lower'].iloc[-1])
-
+    last_upper = float(data['upper'].iloc[-1])
+    
+    # 狀態訊息組合
     status_msg = ""
+    mode_tag = "🛡️ 防禦模式啟動" if is_defensive_now else "常規模式"
+    trailing_pct_display = 8 if is_defensive_now else 15
+
     if position == 1:
-        stop_price = peak_price * (1 - TRAILING_STOP_PCT)
+        stop_price = peak_price * (1 - (DEFENSIVE_TRAILING if is_defensive_now else TRAILING_STOP_PCT))
         if signal == "BUY": status_msg = f"🟢 *今日買進 (BUY)* | 買入價: `${last_price:.2f}`"
-        elif signal == "HOLD": status_msg = f"🛡️ *多單持倉中* | 15% 停利線: `${stop_price:.2f}`"
+        elif signal == "HOLD": status_msg = f"📈 *持倉中* ({mode_tag}) | {trailing_pct_display}% 停利線: `${stop_price:.2f}`"
     else:
-        if signal == "SELL_TRAILING": status_msg = f"🛑 *15% 移動停利出場* | 賣出價: `${last_price:.2f}`"
-        elif signal == "SELL_DONCHIAN": status_msg = f"🔴 *跌破 10 日停損* | 賣出價: `${last_price:.2f}`"
+        if signal == "SELL_TRAILING": status_msg = f"🛑 *{trailing_pct_display}% 移動停利出場* | 賣出價: `${last_price:.2f}`"
+        elif signal == "SELL_DONCHIAN": status_msg = f"🔴 *跌破停損線出場* | 賣出價: `${last_price:.2f}`"
         else:
             diff_pct = ((last_upper / last_price) - 1) * 100
-            status_msg = f"⚪ *空手觀望* | 距突破線差: `{diff_pct:.1f}%`"
+            status_msg = f"⚪ *空手觀望* ({mode_tag}) | 距突破線差: `{diff_pct:.1f}%`"
 
     return f"📌 *{symbol}* (${last_price:.2f})\n• {status_msg}\n"
 
@@ -117,7 +149,6 @@ def get_factor4_and_5():
 
 def generate_5factor_report():
     f1, f2, f3, f45 = get_factor1_shipping(), get_factor2_opec_production(), get_factor3_us_inventory(), get_factor4_and_5()
-    
     s1 = 1 if f1.get('Price') and f1['Price'] > f1['MA50'] else 0
     s2 = 1 if f2.get('Production_Mbd') and f2['Production_Mbd'] < 2600 else 0
     s3 = 1 if f3.get('Inventory_Mbbl') and f3['Inventory_Mbbl'] < 420 else 0
@@ -125,26 +156,19 @@ def generate_5factor_report():
     s5 = 1 if f45.get('Brent_MA5') and f45['Brent_MA5'] > 95 and f45['Brent_Slope'] > 0 else 0
     
     score = s1 + s2 + s3 + s4 + s5
-    
     msg = "🌍 *Hormuz 5 因子地緣評分卡*\n"
-    msg += f"• 油輪運費(TNK): `{s1}` 分\n"
-    msg += f"• OPEC產量緊縮: `{s2}` 分\n"
-    msg += f"• 全美原油庫存: `{s3}` 分\n"
-    msg += f"• 裂解價差優勢: `{s4}` 分\n"
-    msg += f"• 油價動能加速: `{s5}` 分\n"
-    msg += f"🏆 *總分: {score} / 5*\n"
+    msg += f"• 油輪運費(TNK): `{s1}` 分\n• OPEC產量緊縮: `{s2}` 分\n• 全美原油庫存: `{s3}` 分\n"
+    msg += f"• 裂解價差優勢: `{s4}` 分\n• 油價動能加速: `{s5}` 分\n🏆 *總分: {score} / 5*\n"
     
-    if score >= 2:
-        msg += "🚨 *訊號*: 【進場做多能源】(建議: LONG XLE)"
-    else:
-        msg += "🛡️ *訊號*: 【FLAT 空手觀望】"
+    if score >= 2: msg += "🚨 *訊號*: 【進場做多能源】(建議: LONG XLE)"
+    else: msg += "🛡️ *訊號*: 【FLAT 空手觀望】"
     return msg + "\n"
 
 # ==========================================
-# 主程式：組裝與發送
+# 主程式
 # ==========================================
 def main():
-    print("啟動整合策略運算...")
+    print("啟動整合策略運算 (內建 ATR 避險)...")
     messages = ["🤖 *量化交易每日綜合戰報*\n" + "—"*22 + "\n"]
     
     for sym in SYMBOLS:
