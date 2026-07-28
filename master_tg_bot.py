@@ -10,16 +10,16 @@ warnings.filterwarnings('ignore')
 # ==========================================
 # 參數與金鑰設定
 # ==========================================
-# 1. 唐奇安策略參數
-SYMBOLS = ["USD", "QLD", "TSLL"]
+# 1. 唐奇安策略參數 (加入 BTC-USD)
+SYMBOLS = ["USD", "QLD", "TSLL", "BTC-USD"]
 ENTRY_WINDOW = 20
 EXIT_WINDOW = 10
 TRAILING_STOP_PCT = 0.15
 
-# 2. 金鑰 (已帶入你的專屬配置)
-EIA_API_KEY = os.getenv("EIA_API_KEY", "LG2OcZHmhIOBcSOw98z5T8A47ojsxZkO92JOhc0I")
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "8862675833:AAFMlmMTOtBwI2sDjwlFgY39Gg5pOzjGWr8")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "8318133732")
+# 2. 金鑰 (純讀取雲端環境變數)
+EIA_API_KEY = os.getenv("EIA_API_KEY")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def send_telegram_message(text):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -147,7 +147,6 @@ def main():
     print("啟動整合策略運算...")
     messages = ["🤖 *量化交易每日綜合戰報*\n" + "—"*22 + "\n"]
     
-    # 加入唐奇安戰報
     for sym in SYMBOLS:
         try: messages.append(calculate_strategy_state(sym))
         except Exception as e: messages.append(f"❌ {sym} 錯誤: {e}\n")
@@ -155,7 +154,6 @@ def main():
     messages.append(get_sgov_status())
     messages.append("—"*22 + "\n")
     
-    # 加入能源 5 因子戰報
     try: messages.append(generate_5factor_report())
     except Exception as e: messages.append(f"❌ 5因子錯誤: {e}\n")
     
