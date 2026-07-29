@@ -2,12 +2,11 @@ name: Daily Quant Bot with Memory
 
 on:
   schedule:
-    # 每天早上 6 點執行 (台灣時間 6:00 = UTC 22:00，因跨日設定為前一天 22:00)
     - cron: '0 22 * * *'
-  workflow_dispatch: # 允許手動從網頁按鈕觸發
+  workflow_dispatch:
 
 permissions:
-  contents: write # 允許 Action 將記憶檔推回倉庫
+  contents: write
 
 jobs:
   run-bot:
@@ -17,8 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # 抓取完整的歷史紀錄，避免 push 時發生分岔錯誤
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,8 +25,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install yfinance pandas requests
+              python -m pip install --upgrade pip
+              pip install yfinance pandas requests
 
       - name: Run Quant Bot
         env:
@@ -36,29 +34,24 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python master_tg_bot.py
+              python master_tg_bot.py
 
       - name: 💾 Commit and Push OpenClaw Memory
         run: |
-          # 設定 GitHub Actions 的機器人身分
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 追蹤小龍蝦可能存放記憶的檔案 (根據你目前有的設定檔)
-          # 如果你有特定存放記憶的 json 檔，請確保它在這裡被 git add 到
-          git add -A
-          
-          # 檢查是否有檔案變動，若有變動則提交並推送回 main 分支
-          git diff --quiet && git diff --staged --quiet || (git commit -m "💾 自動更新小龍蝦記憶" && git push origin main)
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+              git add -A
+              git diff --quiet && git diff --staged --quiet || (git commit -m "💾 自動更新小龍蝦記憶" && git push origin main)
+
       - name: ☁️ 安裝並設定 Rclone
         run: |
-          sudo apt-get update
-          sudo apt-get install -y rclone
-          mkdir -p ~/.config/rclone
-          echo "${{ secrets.RCLONE_CONF }}" > ~/.config/rclone/rclone.conf
+              sudo apt-get update
+              sudo apt-get install -y rclone
+              mkdir -p ~/.config/rclone
+              echo "${{ secrets.RCLONE_CONF }}" > ~/.config/rclone/rclone.conf
 
       - name: 🚀 同步資料到 Google Drive
         run: |
-          rclone copy ./memory.json gdrive:OpenClaw_Bot_Data/
-          rclone copy ./QUANT_INSIGHTS.md gdrive:OpenClaw_Bot_Data/
-          echo "✅ 成功將最新記憶與戰報同步至 Google Drive！"
+              rclone copy ./memory.json gdrive:OpenClaw_Bot_Data/
+              rclone copy ./QUANT_INSIGHTS.md gdrive:OpenClaw_Bot_Data/
+              echo "✅ 成功將最新記憶與戰報同步至 Google Drive！"
