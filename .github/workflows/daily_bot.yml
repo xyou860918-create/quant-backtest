@@ -43,12 +43,24 @@ jobs:
               git add -A
               git diff --quiet && git diff --staged --quiet || (git commit -m "💾 自動更新小龍蝦記憶" && git push origin main)
 
-      - name: ☁️ 安裝並設定 Rclone
+      - name: ☁️ 安裝並設定 Rclone (Python 安全解碼)
+        env:
+          RCLONE_CONF_BASE64: ${{ secrets.RCLONE_CONF }}
         run: |
               sudo apt-get update
               sudo apt-get install -y rclone
               mkdir -p ~/.config/rclone
-              echo "${{ secrets.RCLONE_CONF }}" > ~/.config/rclone/rclone.conf
+              python3 -c "
+              import os, base64
+              b64_str = os.environ.get('RCLONE_CONF_BASE64', '').strip()
+              print(f'Base64 string length: {len(b64_str)}')
+              decoded = base64.b64decode(b64_str).decode('utf-8')
+              print(f'Decoded content length: {len(decoded)}')
+              path = os.path.expanduser('~/.config/rclone/rclone.conf')
+              with open(path, 'w') as f:
+                  f.write(decoded)
+              print('Successfully wrote rclone.conf')
+              "
 
       - name: 🚀 同步資料到 Google Drive
         run: |
