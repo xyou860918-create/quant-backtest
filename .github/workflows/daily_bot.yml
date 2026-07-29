@@ -52,6 +52,5 @@ jobs:
 
       - name: 🚀 同步資料到 Google Drive
         run: |
-              rclone copy ./memory.json gdrive:OpenClaw_Bot_Data/
-              rclone copy ./QUANT_INSIGHTS.md gdrive:OpenClaw_Bot_Data/
-              echo "✅ 成功將最新記憶與戰報同步至 Google Drive！"
+              rclone copy . gdrive:OpenClaw_Bot_Data/ --include "*.py" --include "*.txt"
+              echo "✅ 成功將最新程式碼與檔案同步至 Google Drive！"
