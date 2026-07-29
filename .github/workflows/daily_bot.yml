@@ -50,3 +50,15 @@ jobs:
           
           # 檢查是否有檔案變動，若有變動則提交並推送回 main 分支
           git diff --quiet && git diff --staged --quiet || (git commit -m "💾 自動更新小龍蝦記憶" && git push origin main)
+      - name: ☁️ 安裝並設定 Rclone
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rclone
+          mkdir -p ~/.config/rclone
+          echo "${{ secrets.RCLONE_CONF }}" > ~/.config/rclone/rclone.conf
+
+      - name: 🚀 同步資料到 Google Drive
+        run: |
+          rclone copy ./memory.json gdrive:OpenClaw_Bot_Data/
+          rclone copy ./QUANT_INSIGHTS.md gdrive:OpenClaw_Bot_Data/
+          echo "✅ 成功將最新記憶與戰報同步至 Google Drive！"
