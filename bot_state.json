@@ -24,8 +24,8 @@
     "BTC-USD": {
       "signal": 0,
       "upper": 81271.7421875,
-      "lower": 64506.25390625,
-      "price": 80350.046875,
+      "lower": 64680.7109375,
+      "price": 79115.8515625,
       "symbol": "BTC-USD"
     }
   },
@@ -51,7 +51,7 @@
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 82,
-      "timestamp": "2026-09-08T00:08:29.912532"
+      "timestamp": "2026-09-08T23:59:51.305705"
     },
     "QLD": {
       "symbol": "QLD",
@@ -74,7 +74,7 @@
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 82,
-      "timestamp": "2026-09-08T00:08:30.060868"
+      "timestamp": "2026-09-08T23:59:51.489341"
     },
     "TSLL": {
       "symbol": "TSLL",
@@ -97,12 +97,12 @@
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 82,
-      "timestamp": "2026-09-08T00:08:30.232772"
+      "timestamp": "2026-09-08T23:59:51.655997"
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
       "signal": 0,
-      "price": 80350.046875,
+      "price": 79115.8515625,
       "expectancy": 0.0020485696900300458,
       "avg_win": 0.02779557186561679,
       "avg_loss": -0.006533764368498868,
@@ -112,15 +112,15 @@
       "total_cost_bps": 16,
       "regime": "trending_up",
       "regime_strength": 1.0,
-      "liquidity_score": 0.2006259044339446,
+      "liquidity_score": 0.19495909319944696,
       "signal_decay_score": 0.0,
-      "stop_loss_price": 80350.05,
+      "stop_loss_price": 79115.85,
       "time_stop_date": "2026-09-28",
       "max_hold_days": 20,
       "kelly_fraction": 0.07370129673655444,
       "risk_per_trade_pct": 7.370129673655444,
-      "lookback_days": 119,
-      "timestamp": "2026-09-08T00:08:30.372722"
+      "lookback_days": 120,
+      "timestamp": "2026-09-08T23:59:51.783300"
     }
   },
   "hormuz": {
@@ -156,10 +156,10 @@
     "kelly_fraction": 0,
     "risk_per_trade_pct": 0,
     "lookback_days": 2181,
-    "timestamp": "2026-09-08T00:08:30.655603"
+    "timestamp": "2026-09-08T23:59:52.011011"
   },
   "sgov": {
-    "price": 100.47,
+    "price": 100.48,
     "yield_est": "~5.2%"
   },
   "timestamp": "2026-09-08",
