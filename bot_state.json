@@ -25,7 +25,7 @@
       "signal": 0,
       "upper": 81271.7421875,
       "lower": 75612.5078125,
-      "price": 80901.4609375,
+      "price": 81233.6796875,
       "symbol": "BTC-USD"
     }
   },
@@ -46,12 +46,12 @@
       "liquidity_score": 0.688407739323886,
       "signal_decay_score": 0.0,
       "stop_loss_price": 28.39,
-      "time_stop_date": "2026-10-10",
+      "time_stop_date": "2026-10-11",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 81,
-      "timestamp": "2026-09-20T00:02:15.129700"
+      "timestamp": "2026-09-21T00:04:46.721729"
     },
     "QLD": {
       "symbol": "QLD",
@@ -69,12 +69,12 @@
       "liquidity_score": 0.2352888415505788,
       "signal_decay_score": 0.0,
       "stop_loss_price": 91.0,
-      "time_stop_date": "2026-10-10",
+      "time_stop_date": "2026-10-11",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 81,
-      "timestamp": "2026-09-20T00:02:15.276298"
+      "timestamp": "2026-09-21T00:04:47.071147"
     },
     "TSLL": {
       "symbol": "TSLL",
@@ -92,17 +92,17 @@
       "liquidity_score": 0.1780884149800933,
       "signal_decay_score": 0.0,
       "stop_loss_price": 9.63,
-      "time_stop_date": "2026-10-10",
+      "time_stop_date": "2026-10-11",
       "max_hold_days": 20,
       "kelly_fraction": 0.25,
       "risk_per_trade_pct": 25.0,
       "lookback_days": 81,
-      "timestamp": "2026-09-20T00:02:15.403991"
+      "timestamp": "2026-09-21T00:04:47.345200"
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
       "signal": 0,
-      "price": 80901.4609375,
+      "price": 81233.6796875,
       "expectancy": -0.000323934113637504,
       "avg_win": 0.025065223251841476,
       "avg_loss": -0.005965969083743945,
@@ -111,16 +111,16 @@
       "fee_adjusted_edge": -0.0019239341136375041,
       "total_cost_bps": 16,
       "regime": "neutral",
-      "regime_strength": 0.9580858428345865,
-      "liquidity_score": 0.2861068236123563,
+      "regime_strength": 0.9088091711156123,
+      "liquidity_score": 0.2689284719090259,
       "signal_decay_score": 0.0,
-      "stop_loss_price": 80901.46,
-      "time_stop_date": "2026-10-10",
+      "stop_loss_price": 81233.68,
+      "time_stop_date": "2026-10-11",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 119,
-      "timestamp": "2026-09-20T00:02:15.508982"
+      "timestamp": "2026-09-21T00:04:47.774399"
     }
   },
   "hormuz": {
@@ -151,18 +151,18 @@
     "liquidity_score": 0.3215309138546206,
     "signal_decay_score": 0.0,
     "stop_loss_price": 69.63,
-    "time_stop_date": "2026-10-10",
+    "time_stop_date": "2026-10-11",
     "max_hold_days": 20,
     "kelly_fraction": 0,
     "risk_per_trade_pct": 0,
     "lookback_days": 2190,
-    "timestamp": "2026-09-20T00:02:15.780605"
+    "timestamp": "2026-09-21T00:04:48.279809"
   },
   "sgov": {
     "price": 100.59,
     "yield_est": "~5.2%"
   },
-  "timestamp": "2026-09-20",
+  "timestamp": "2026-09-21",
   "config": {
     "fee_bps": 5,
     "slippage_bps": 3,
