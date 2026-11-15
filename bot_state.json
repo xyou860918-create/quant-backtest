@@ -18,14 +18,14 @@
       "signal": 0,
       "upper": 11.630000114440918,
       "lower": 8.100000381469727,
-      "price": 10.770000457763672,
+      "price": 10.369999885559082,
       "symbol": "TSLL"
     },
     "BTC-USD": {
       "signal": -1,
       "upper": 81267.5859375,
-      "lower": 73720.1171875,
-      "price": 71342.96875,
+      "lower": 71342.96875,
+      "price": 68249.2734375,
       "symbol": "BTC-USD"
     }
   },
@@ -46,12 +46,12 @@
       "liquidity_score": 0.5853637652302994,
       "signal_decay_score": 1.0,
       "stop_loss_price": 29.23,
-      "time_stop_date": "2026-12-04",
+      "time_stop_date": "2026-12-05",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
-      "lookback_days": 85,
-      "timestamp": "2026-11-14T02:10:32.107261"
+      "lookback_days": 84,
+      "timestamp": "2026-11-15T01:42:50.206636"
     },
     "QLD": {
       "symbol": "QLD",
@@ -69,17 +69,17 @@
       "liquidity_score": 0.22564431109525301,
       "signal_decay_score": 0.0,
       "stop_loss_price": 79.3,
-      "time_stop_date": "2026-12-04",
+      "time_stop_date": "2026-12-05",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
-      "lookback_days": 85,
-      "timestamp": "2026-11-14T02:10:32.344348"
+      "lookback_days": 84,
+      "timestamp": "2026-11-15T01:42:50.345961"
     },
     "TSLL": {
       "symbol": "TSLL",
       "signal": 0,
-      "price": 10.770000457763672,
+      "price": 10.369999885559082,
       "expectancy": -0.007554642347229816,
       "avg_win": 0.021636575081548138,
       "avg_loss": -0.014852446704424305,
@@ -88,39 +88,39 @@
       "fee_adjusted_edge": -0.009154642347229817,
       "total_cost_bps": 16,
       "regime": "neutral",
-      "regime_strength": 0.4787218119138965,
-      "liquidity_score": 0.19118896961481957,
+      "regime_strength": 0.49896961585850974,
+      "liquidity_score": 0.19304066886848073,
       "signal_decay_score": 0.0,
-      "stop_loss_price": 10.77,
-      "time_stop_date": "2026-12-04",
+      "stop_loss_price": 10.37,
+      "time_stop_date": "2026-12-05",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 84,
-      "timestamp": "2026-11-14T02:10:32.563336"
+      "timestamp": "2026-11-15T01:42:50.472514"
     },
     "BTC-USD": {
       "symbol": "BTC-USD",
       "signal": -1,
-      "price": 71342.96875,
-      "expectancy": -0.0001834804103208331,
+      "price": 68249.2734375,
+      "expectancy": -0.00023069772997680532,
       "avg_win": 0.019416313620490167,
-      "avg_loss": -0.006419778511033424,
-      "win_rate": 0.23333333333333334,
-      "profit_factor": 0.9623257187982754,
-      "fee_adjusted_edge": -0.0017834804103208331,
+      "avg_loss": -0.006210222923597187,
+      "win_rate": 0.22580645161290322,
+      "profit_factor": 0.9515460094942706,
+      "fee_adjusted_edge": -0.0018306977299768054,
       "total_cost_bps": 16,
       "regime": "trending_down",
       "regime_strength": 1.0,
-      "liquidity_score": 0.23631169735378163,
+      "liquidity_score": 0.2779682906083852,
       "signal_decay_score": 1.0,
-      "stop_loss_price": 76007.67,
-      "time_stop_date": "2026-12-04",
+      "stop_loss_price": 73102.25,
+      "time_stop_date": "2026-12-05",
       "max_hold_days": 20,
       "kelly_fraction": 0,
       "risk_per_trade_pct": 0,
       "lookback_days": 119,
-      "timestamp": "2026-11-14T02:10:32.765907"
+      "timestamp": "2026-11-15T01:42:50.574098"
     }
   },
   "hormuz": {
@@ -151,18 +151,18 @@
     "liquidity_score": 0.19620326981638106,
     "signal_decay_score": 0.0,
     "stop_loss_price": 71.8,
-    "time_stop_date": "2026-12-04",
+    "time_stop_date": "2026-12-05",
     "max_hold_days": 20,
     "kelly_fraction": 0,
     "risk_per_trade_pct": 0,
     "lookback_days": 2230,
-    "timestamp": "2026-11-14T02:10:33.100375"
+    "timestamp": "2026-11-15T01:42:50.802749"
   },
   "sgov": {
-    "price": 100.53,
+    "price": 100.56,
     "yield_est": "~5.2%"
   },
-  "timestamp": "2026-11-14",
+  "timestamp": "2026-11-15",
   "config": {
     "fee_bps": 5,
     "slippage_bps": 3,
